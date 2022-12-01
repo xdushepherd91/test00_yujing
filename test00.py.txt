@@ -1,0 +1,48 @@
+import argparse
+import sys
+import time
+import datetime
+
+##################wirten by zhouxu####################################
+# 使用方法
+#需要安装python3.6及以上版本
+#1、将脚本和要对比的文本文件放到同一个目录下
+#2、将两个需要对比的文本转为UTF-8格式
+#3、在cmd命令行模式下执行：python diff_file.py -f1 1.txt -f2 2.txt
+###################1.txt 和 2.txt是要对比的文本文件#######################
+def readfile(filename):
+    try:
+        with open(filename, 'r',encoding='UTF-8') as fileHandle:
+            text = fileHandle.read().splitlines()
+            #print(text)
+        return text
+    except IOError as e:
+        print("Read file Error:", e)
+        sys.exit()
+
+def diff_file(filename1, filename2):
+    text1_lines = readfile(filename1)
+    text2_lines = readfile(filename2)
+    with open('result1.txt', 'w', encoding='UTF-8') as resultfile:
+        resultfile.write('--------------文件1与文件2的差异-------------------'+'\n')
+        diff_set = set(text1_lines).difference(set(text2_lines))
+        for i in diff_set:
+            resultfile.write(str(i)+'\n')
+    with open('result2.txt', 'w', encoding='UTF-8') as resultfile2:
+        resultfile2.write('--------------文件2与文件1的差异-------------------' + '\n')
+        diff_set2 = set(text2_lines).difference(set(text1_lines))
+        for j in diff_set2:
+            resultfile2.write(str(j) + '\n')
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="传入两个文件参数")
+    parser.add_argument('-f1', action='store', dest='filename1', required=True)
+    parser.add_argument('-f2', action='store', dest='filename2', required=True)
+    given_args = parser.parse_args()
+    filename1 = given_args.filename1
+    filename2 = given_args.filename2
+    begin = datetime.datetime.now()
+    print('任务开始：'+ str(begin))
+    diff_file(filename1, filename2)
+    end = datetime.datetime.now()
+    print('任务结束，耗时：'+ str((end-begin)))
